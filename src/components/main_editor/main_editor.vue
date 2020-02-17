@@ -3,18 +3,20 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapMutations, mapGetters } from "vuex";
 export default {
   mounted() {
-    var Editor = require('../../script/editor');
+    var Editor = require("../../script/editor");
     var el = this.$el;
-    var editor = window.editor = new Editor(el);
+    var editor = (window.editor = new Editor(el));
     this.setEditor(editor);
+
     if (window.localStorage.mindText) {
+      console.log("test");
       editor.minder.importJson(JSON.parse(window.localStorage.mindText));
     }
 
-    editor.minder.on('contentchange', function () {
+    editor.minder.on("contentchange", function() {
       window.localStorage.mindText = JSON.stringify(editor.minder.exportJson());
     });
 
@@ -23,21 +25,15 @@ export default {
     this.executeCallback();
   },
   computed: {
-    ...mapGetters([
-      'minder',
-    ])
+    ...mapGetters(["minder"])
   },
   methods: {
-    ...mapActions([
-      'executeCallback'
-    ]),
-    ...mapMutations([
-      'setMinder',
-      'setEditor'
-    ])
-  },
-}
-
+    ...mapActions(["executeCallback"]),
+    ...mapMutations(["setMinder", "setEditor"])
+  }
+};
 </script>
 
-<style lang="scss">@import "../../style/editor.scss";</style>
+<style lang="scss">
+@import "../../style/editor.scss";
+</style>
