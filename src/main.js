@@ -5,6 +5,10 @@ import store from './store'
 import 'element-ui/lib/theme-chalk/index.css'
 import ElementUI from 'element-ui'
 import $ from 'jquery'
+import axios from 'axios'
+
+import * as jsonpatch from 'fast-json-patch';
+
 
 require('../node_modules/codemirror/lib/codemirror.js')
 require('../node_modules/codemirror/mode/xml/xml.js')
@@ -21,6 +25,8 @@ require('../node_modules/kityminder-core/dist/kityminder.core.js')
 require('./script/expose-editor.js')
 
 Vue.config.productionTip = true
+Vue.prototype.$axios = axios;
+Vue.prototype.jsonpatch = jsonpatch;
 Vue.use(ElementUI)
 
 new Vue({

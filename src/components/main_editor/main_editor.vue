@@ -5,23 +5,73 @@
 <script>
 import { mapActions, mapMutations, mapGetters } from "vuex";
 export default {
-  mounted() {
+  data() {
+    return {
+      title: "",
+      old_doc: {},
+      new_doc: {}
+    };
+  },
+  async mounted() {
     var Editor = require("../../script/editor");
     var el = this.$el;
     var editor = (window.editor = new Editor(el));
     this.setEditor(editor);
 
-    if (window.localStorage.mindText) {
-      console.log("test");
-      editor.minder.importJson(JSON.parse(window.localStorage.mindText));
-    }
-
-    editor.minder.on("contentchange", function() {
-      window.localStorage.mindText = JSON.stringify(editor.minder.exportJson());
-    });
-
     window.minder = window.km = editor.minder;
     this.setMinder(editor.minder);
+
+    console.log("set editor");
+
+    let res = await this.$axios.get(`/data/mind/${this.$route.params.id}`);
+    let text = res.data;
+    this.title = text.title;
+    if (!text.hasOwnProperty("data")) {
+      let res = await this.$axios.post(`/data/mind/${this.$route.params.id}`, {
+        data: editor.minder.exportJson(),
+        title: this.title,
+        type: "create"
+      });
+    } else {
+      editor.minder.importJson(text.data);
+    }
+
+    this.old_doc = editor.minder.exportJson();
+
+    editor.minder.on("contentchange", async () => {
+      this.new_doc = editor.minder.exportJson();
+      let opdata = this.jsonpatch.compare(this.old_doc, this.new_doc);
+      console.log("更新内容", opdata);
+
+      if (opdata.length > 0) {
+        let temp = Object.assign({}, this.old_doc);
+        this.old_doc = this.new_doc;
+        let res = await this.$axios.post(
+          `/data/mind/${this.$route.params.id}`,
+          {
+            data: opdata,
+            title: this.title,
+            type: "increment"
+          }
+        );
+        let text = res.data;
+        if (text == "更新成功") {
+          this.$message({
+            message: res.data,
+            type: "success"
+          });
+        } else {
+          this.old_doc = temp;
+        }
+      }
+
+      // window.localStorage.mindText = JSON.stringify(editor.minder.exportJson());
+    });
+
+    // if (window.localStorage.mindText) {
+    //   console.log("test");
+    // }
+
     this.executeCallback();
   },
   computed: {
