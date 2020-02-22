@@ -46,19 +46,31 @@ export default {
     };
   },
   methods: {
-    search() {},
+    search() {
+      this.show = this.minds
+        .filter(
+          data =>
+            !this.query ||
+            data.title.toLowerCase().includes(this.query.toLowerCase())
+        )
+        .slice(
+          (this.currentPage - 1) * this.pageSize,
+          this.currentPage * this.pageSize
+        );
+    },
     get_minds() {
       this.$axios.get(`/data/mind/`).then(res => {
+        this.minds = res.data;
         this.show = res.data;
       });
     },
     toDetail(id) {
-      let detailUrl = this.$router.push({
+      let detailUrl = this.$router.resolve({
         name: "editor",
         params: { id: id }
       });
 
-      //   window.open(detailUrl.href, "_blank");
+      window.open(detailUrl.href, "_blank");
     },
 
     toEdit(id) {
