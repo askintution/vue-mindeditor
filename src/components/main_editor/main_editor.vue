@@ -24,6 +24,16 @@ export default {
     console.log("set editor");
 
     let res = await this.$axios.get(`/data/mind/${this.$route.params.id}`);
+    if (
+      res.data &&
+      res.data.data &&
+      res.data.data.root &&
+      res.data.data.root.data
+    ) {
+      console.log(res.data.data.root.data.text);
+
+      document.title = res.data.data.root.data.text;
+    }
     let text = res.data;
     this.title = text.title;
     if (!text.hasOwnProperty("data")) {
@@ -41,7 +51,7 @@ export default {
     editor.minder.on("contentchange", async () => {
       this.new_doc = editor.minder.exportJson();
       let opdata = this.jsonpatch.compare(this.old_doc, this.new_doc);
-      console.log("更新内容", opdata);
+      console.log("更新内容");
 
       if (opdata.length > 0) {
         let temp = Object.assign({}, this.old_doc);

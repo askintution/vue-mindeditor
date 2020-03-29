@@ -14,7 +14,7 @@
       <el-scrollbar id="minds-ul">
         <li class='ShowMinds-mind' v-for="item in show.slice((currentPage-1)*pageSize,currentPage*pageSize)"
           :key="item._id">
-          <a style="" @click="toDetail(item._id)">{{ item.category }} - {{ item.title }}
+          <a style="" @click="toDetail(item._id)">{{ item.topic }} - {{ item.title }}
           </a>
 
           <el-button type="primary" icon="el-icon-edit" @click="toEdit(item._id)" style="float:right"></el-button>
@@ -47,16 +47,16 @@ export default {
   },
   methods: {
     search() {
-      this.show = this.minds
-        .filter(
-          data =>
-            !this.query ||
-            data.title.toLowerCase().includes(this.query.toLowerCase())
-        )
-        .slice(
-          (this.currentPage - 1) * this.pageSize,
-          this.currentPage * this.pageSize
-        );
+      this.$axios
+        .post(`/data/mind/search`, {
+          query: this.query
+        })
+        .then(res => {
+          this.show = res.data.slice(
+            (this.currentPage - 1) * this.pageSize,
+            this.currentPage * this.pageSize
+          );
+        });
     },
     get_minds() {
       this.$axios.get(`/data/mind/`).then(res => {

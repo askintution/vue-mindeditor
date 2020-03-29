@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-input v-model="title" placeholder="输入mind标题" style='width:500px;margin-bottom:10px'></el-input>
-    <el-input v-model="category" placeholder="输入类别名称" style='width:500px;margin-bottom:10px'></el-input>
+    <el-input v-model="topic" placeholder="输入类别名称" style='width:500px;margin-bottom:10px'></el-input>
     <el-input type="textarea" :rows="20" placeholder="请输入内容" v-model="mind_json">
     </el-input>
     <el-button @click="pushData" type='primary' size='small' style='margin-right:40px;'>{{btn}}</el-button>
@@ -15,7 +15,7 @@ export default {
   data() {
     return {
       title: "",
-      category: "",
+      topic: "",
       mind_json: "",
       isNew: true
     };
@@ -36,7 +36,7 @@ export default {
     if (!this.isNew) {
       this.$axios.get(`/data/mind/${this.$route.params.id}`).then(res => {
         this.title = res.data.title;
-        this.category = res.data.category;
+        this.topic = res.data.topic;
         this.mind_json = JSON.stringify(res.data.data);
       });
     }
@@ -48,7 +48,7 @@ export default {
         this.$axios
           .post(`/data/mind/${this.$route.params.id}`, {
             title: this.title,
-            category: this.category,
+            topic: this.topic,
             data: JSON.parse(this.mind_json),
             type: "create"
           })
@@ -63,7 +63,7 @@ export default {
         this.$axios
           .post(`/data/mind/new`, {
             title: this.title,
-            category: this.category,
+            topic: this.topic,
             data: JSON.parse(this.mind_json)
           })
           .then(res => {
